@@ -587,7 +587,7 @@ private loadText() {
 private textToSpeechT(message){
     if (message) {
 		if (ttsApiKey){
-            [uri: "x-rincon-mp3radio://api.voicerss.org/" + "?key=$ttsApiKey&hl="+ttsLanguage+"&r=0&f=48khz_16bit_mono&src=" + URLEncoder.encode(message, "UTF-8").replaceAll(/\+/,'%20') +"&sf=//s3.amazonaws.com/smartapp-" , duration: "${5 + Math.max(Math.round(message.length()/12),2)}"]
+            [uri: "x-rincon-mp3radio://api.voicerss.org/" + "?key=$ttsApiKey&hl="+ttsLanguage+"&r=-2&f=48khz_16bit_mono&src=" + URLEncoder.encode(message, "UTF-8").replaceAll(/\+/,'%20') +"&sf=//s3.amazonaws.com/smartapp-" , duration: "${5 + Math.max(Math.round(message.length()/12),2)}"]
         }
         else{
         	message = message.length() >100 ? message[0..90] :message
@@ -603,7 +603,7 @@ private safeTextToSpeech(message) {
 	message = message?:"You selected the Text to Speach Function but did not enter a Message"
     switch(ttsMode){
         case "Vioce RSS":
-        	[uri: "x-rincon-mp3radio://api.voicerss.org/" + "?key=$ttsApiKey&hl="+ttsLanguage+"&r=0&f=48khz_16bit_mono&src=" + URLEncoder.encode(message, "UTF-8").replaceAll(/\+/,'%20') +"&sf=//s3.amazonaws.com/smartapp-" , duration: "${5 + Math.max(Math.round(message.length()/12),2)}"]
+        	[uri: "x-rincon-mp3radio://api.voicerss.org/" + "?key=$ttsApiKey&hl="+ttsLanguage+"&r=-2&f=48khz_16bit_mono&src=" + URLEncoder.encode(message, "UTF-8").replaceAll(/\+/,'%20') +"&sf=//s3.amazonaws.com/smartapp-" , duration: "${5 + Math.max(Math.round(message.length()/12),2)}"]
         break
         case "Alexa":
         	[uri: "x-rincon-mp3radio://tts.freeoda.com/alexa.php/" + "?key=$alexaApiKey&text=" + URLEncoder.encode(message, "UTF-8").replaceAll(/\+/,'%20') +"&sf=//s3.amazonaws.com/smartapp-" , duration: "${5 + Math.max(Math.round(message.length()/12),2)}"]
