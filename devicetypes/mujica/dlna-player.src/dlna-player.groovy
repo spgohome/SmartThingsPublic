@@ -1,8 +1,10 @@
 /** 
- *  MediaRenderer Player v2.5.0
+ *  MediaRenderer Player v2.5.2
  *
  *  Author: SmartThings - Ulises Mujica (Ule)
  *
+ *  Fix Metadata
+ *  Fix Radio Stations
  */
 
 
@@ -786,11 +788,10 @@ def setTrack(Map trackData) {
 
 def setTrack(String uri, metaData="")
 {
-	//metaData = metaData?:"<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\"><item id=\"1\" parentID=\"1\" restricted=\"1\"><upnp:class>object.item.audioItem.musicTrack</upnp:class><upnp:album>SmartThings Catalog</upnp:album><upnp:artist>SmartThings</upnp:artist><upnp:albumArtURI>https://graph.api.smartthings.com/api/devices/icons/st.Entertainment.entertainment2-icn?displaySize=2x</upnp:albumArtURI><dc:title>SmartThings Message</dc:title><res protocolInfo=\"http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000\" >${groovy.xml.XmlUtil.escapeXml(uri)} </res></item> </DIDL-Lite>"
-  //  metaData = metaData?:cleanUri("<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\"><item id=\"1\" parentID=\"1\" restricted=\"1\"><upnp:class>object.item.audioItem.audioBroadcast</upnp:class><upnp:album>SmartThings Catalog</upnp:album><upnp:artist>SmartThings</upnp:artist><upnp:albumArtURI>https://graph.api.smartthings.com/api/devices/icons/st.Entertainment.entertainment2-icn?displaySize=2x</upnp:albumArtURI><dc:title>SmartThings Message</dc:title><res protocolInfo=\"http-get:*:audio/mpeg:*\" >${groovy.xml.XmlUtil.escapeXml(uri)} </res></item> </DIDL-Lite>")
-   // metaData = removeAccents(metaData)
-   // metaData = new String(metaData.getBytes("ASCII"), "UTF-8")
-    mediaRendererAction("SetAVTransportURI", [InstanceID:0, CurrentURI:cleanUri(uri),CurrentURIMetaData:cleanUri(metaData)])
+	metaData = metaData? cleanXML(metaData) : null
+	metaData = metaData?:"<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\"><item id=\"1\" parentID=\"1\" restricted=\"1\"><upnp:class>object.item.audioItem.musicTrack</upnp:class><upnp:album>SmartThings Catalog</upnp:album><upnp:artist>SmartThings</upnp:artist><upnp:albumArtURI>https://graph.api.smartthings.com/api/devices/icons/st.Entertainment.entertainment2-icn?displaySize=2x</upnp:albumArtURI><dc:title>SmartThings Message</dc:title><res protocolInfo=\"http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000\" >${groovy.xml.XmlUtil.escapeXml(uri)} </res></item> </DIDL-Lite>"
+	metaData = removeAccents(cleanUri(metaData))
+	mediaRendererAction("SetAVTransportURI", [InstanceID:0, CurrentURI:cleanUri(uri),CurrentURIMetaData:""])
 }
 
 def resumeTrack(Map trackData = null) {
@@ -1138,7 +1139,7 @@ def playStation(incStatation = 0, incGenre = 0){
 def getUriStation(id){
     def  uri
     def params = [
-            uri: "http://www.shoutcast.com/Player/GetStreamUrl",
+            uri: "http://directory.shoutcast.com/Player/GetStreamUrl",
             body: [ station: id],
             contentType: "text/plain",
         ]
@@ -1161,7 +1162,7 @@ def getStationGenre(genre){
             state[genre] = []
                 try {
                 def params = [
-                    uri: "http://www.shoutcast.com/Home/BrowseByGenre",
+                    uri: "http://directory.shoutcast.com/Home/BrowseByGenre",
                     body: [
                         genrename: genre
                     ]
@@ -1228,3 +1229,4 @@ def party(list){
         result.flatten()
     }
 }
+
